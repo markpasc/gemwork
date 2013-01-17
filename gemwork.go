@@ -22,7 +22,7 @@ func main() {
 
     workspace := path.Join(cwd, localPath)
 
-    for _, dirname := range []string{"bin", "pkg", "src"} {
+    for _, dirname := range []string{"bin"} {
         error = os.MkdirAll(path.Join(workspace, dirname), os.FileMode(0755))
         if error != nil {
             fmt.Println(error)
@@ -48,16 +48,16 @@ deactivate () {
     fi
 
     if [ ! "$1" = "nondestructive" ]; then
-        GOPATH="$_OLD_GOPATH"
-        export GOPATH
-        unset _OLD_GOPATH
+        GEM_HOME="$_OLD_GEM_HOME"
+        export GEM_HOME
+        unset _OLD_GEM_HOME
     fi
 
     if [ -n "$BASH" -o -n "$ZSH_VERSION" ]; then
         hash -r
     fi
 
-    unset GOWORKSPACE
+    unset GEMWORKSPACE
     if [ ! "$1" = "nondestructive" ]; then
         unset -f deactivate
     fi
@@ -66,24 +66,20 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-GOWORKSPACE="%s"
-export GOWORKSPACE
+GEMWORKSPACE="%s"
+export GEMWORKSPACE
 
 _OLD_PS1="$PS1"
-PS1="(` + "`" + `basename "$GOWORKSPACE"` + "`" + `)$PS1"
+PS1="(` + "`" + `basename "$GEMWORKSPACE"` + "`" + `)$PS1"
 export PS1
 
 _OLD_PATH="$PATH"
-PATH="$PATH:$GOWORKSPACE/bin"
+PATH="$PATH:$GEMWORKSPACE/bin"
 export PATH
 
-_OLD_GOPATH="$GOPATH"
-if [ -n "$GOPATH" ]; then
-    GOPATH="$GOWORKSPACE:$GOPATH"
-else
-    GOPATH="$GOWORKSPACE"
-fi
-export GOPATH
+_OLD_GEM_HOME="$GEM_HOME"
+GEM_HOME="$GEMWORKSPACE"
+export GEM_HOME
 
 if [ -n "$BASH" -o -n "$ZSH_VERSION" ]; then
     hash -r
